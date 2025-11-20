@@ -1,0 +1,1 @@
+INSERT INTO `chart_of_accounts` (`id`, `account_code`, `account_name`, `account_type`, `account_balance`, `created_at`, `updated_at`) VALUES ('59e86eda-1731-11ee-af03-e86a642fd19a', 'ACC-0000001', 'Business Account', 'revenue', '0.00', '2022-10-17 05:15:05', '2022-10-17 05:15:05');
