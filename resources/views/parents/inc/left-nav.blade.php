@@ -173,7 +173,7 @@
     <a href="" class="logo text-center logo-light">
         <span class="logo-lg">
             {{-- <img src="{{ asset('assets/images/centyplus logo.png') }}" alt="" height="60"> --}}
-           OddsSolver
+           Odds Solver
         </span>
         <span class="logo-sm">
             {{-- <img src="{{ asset('assets/images/centyplus logo.png') }}" alt="" height="60"> --}}
@@ -185,7 +185,7 @@
         <!--- Sidemenu -->
         <ul class="side-nav">
 
-            <li class="side-nav-title side-nav-item" style="display: none">OddsSolver</li>
+            <li class="side-nav-title side-nav-item" style="display: none">Odds Solver</li>
 
             <li class="side-nav-item mt-5">
                 <a href="{{ route('matches.index')}}" class="side-nav-link active">
