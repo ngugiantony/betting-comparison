@@ -9,7 +9,7 @@
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg">
 
                 <!-- item-->
-                <div class="dropdown-item noti-title">
+                {{-- <div class="dropdown-item noti-title">
                     <h5 class="m-0">
                         <span class="float-end">
                             <a href="javascript: void(0);" class="text-dark">
@@ -17,9 +17,9 @@
                             </a>
                         </span>Notification
                     </h5>
-                </div>
+                </div> --}}
 
-                <div style="max-height: 230px;" data-simplebar="">
+                {{-- <div style="max-height: 230px;" data-simplebar="">
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item notify-item">
                         <div class="notify-icon bg-primary">
@@ -80,12 +80,12 @@
                             <small class="text-muted">13 days ago</small>
                         </p>
                     </a>
-                </div>
+                </div> --}}
 
                 <!-- All-->
-                <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
+                {{-- <a href="javascript:void(0);" class="dropdown-item text-center text-primary notify-item notify-all">
                     View All
-                </a>
+                </a> --}}
 
             </div>
         </li>

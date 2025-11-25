@@ -53,7 +53,7 @@ Route::prefix('/admin')->middleware(['isAdmin'])->group(function(){
     Route::get('/view-parent/{id}', [AdminController::class,'parent_details'])->name('view_parent_details');
 });
 
-Route::prefix('parent')->middleware(['isParent'])->group(function(){
+Route::prefix('frontend')->middleware(['isParent'])->group(function(){
     Route::get('/', [GuardianController::class, 'index'])->name('parent.dashboard');
     Route::get('/create_students', [GuardianController::class, 'createStudent'])->name('get_students');
     Route::post('/students', [GuardianController::class, 'store'])->name('store_student');
