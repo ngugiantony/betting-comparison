@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class MatchController extends Controller
 {
-    public function index(Request $request)
+    public function indexx(Request $request)
     {
         $query = DB::table('matches')
             ->join('sports', 'matches.sport_id', '=', 'sports.id')
@@ -57,6 +57,134 @@ class MatchController extends Controller
 
         return view('parents.matches.index', compact('matches', 'sports', 'competitions'));
     }
+    public function index(Request $request)
+{
+    // Get back odds from matches table (Betsson, Bwin, NetBet, ParionsSport, etc.)
+    $backOddsQuery = DB::table('matches')
+        ->join('sports', 'matches.sport_id', '=', 'sports.id')
+        ->leftJoin('competitions', 'matches.competition_id', '=', 'competitions.id')
+        ->select(
+            'matches.id as back_id',
+            'matches.home_name',
+            'matches.away_name',
+            'matches.odds_home as back_home_odds',
+            'matches.odds_draw as back_draw_odds',
+            'matches.odds_away as back_away_odds',
+            'matches.event_date',
+            'matches.event_time',
+            'matches.match_time',
+            'matches.bookmaker as back_bookmaker',
+            'sports.name as sport_name',
+            'competitions.name as competition_name'
+        );
+
+    // Get lay odds from orbitxch_odds table (your actual structure)
+    $layOddsQuery = DB::table('orbitxch_odds')
+        ->select(
+            'id as lay_id',
+            'home_name',
+            'away_name',
+            'odds_home_lay',
+            'volume_home_lay',
+            'odds_draw_lay',
+            'volume_draw_lay',
+            'odds_away_lay',
+            'volume_away_lay',
+            'event_date as lay_event_date',
+            'event_time as lay_event_time',
+            'bookmaker as lay_bookmaker'
+        );
+
+    // Apply filters
+  
+
+    // Filter by sport
+        if ($request->filled('sport')) {
+            $backOddsQuery->where('sports.name', $request->sport);
+        }
+
+        // Filter by competition
+        if ($request->filled('competition')) {
+            $backOddsQuery->where('matches.bookmaker', 'like', '%' . $request->competition . '%');
+        }
+
+        // Filter by home team
+        if ($request->filled('home_team')) {
+            $backOddsQuery->where('matches.home_name', 'like', '%' . $request->home_team . '%');
+        }
+
+        // Filter by away team
+        if ($request->filled('away_team')) {
+            $backOddsQuery->where('matches.away_name', 'like', '%' . $request->away_team . '%');
+        }
+
+        // Filter by odds range
+        if ($request->filled('min_odds')) {
+            $backOddsQuery->where('matches.odds_home', '>=', $request->min_odds);
+        }
+
+        if ($request->filled('max_odds')) {
+            $backOddsQuery->where('matches.odds_home', '<=', $request->max_odds);
+        }
+
+    // Sort and paginate back odds
+    $sortBy = $request->get('sort_by', 'matches.event_time');
+    $sortOrder = $request->get('sort_order', 'asc');
+    $backOddsQuery->orderBy($sortBy, $sortOrder);
+
+    $backMatches = $backOddsQuery->paginate(20);
+
+    // Get all lay odds
+    $layOdds = $layOddsQuery->get();
+
+    // Create a keyed collection for fast lookup
+    $layOddsMap = $layOdds->mapWithKeys(function($match) {
+        $key = strtolower(trim($match->home_name) . '_' . trim($match->away_name));
+        return [$key => $match];
+    });
+
+    // Enrich back matches with lay odds and calculate arbitrage
+    foreach ($backMatches as $match) {
+        $key = strtolower(trim($match->home_name) . '_' . trim($match->away_name));
+        $match->lay_odds = $layOddsMap->get($key);
+        
+        // Calculate arbitrage percentage for each outcome
+        if ($match->lay_odds) {
+            // Arbitrage formula: (1/back_odds + 1/lay_odds - 1) * 100
+            // Negative % = Profitable arbitrage (we win regardless)
+            // Positive % = Losing arbitrage (not recommended)
+            
+            $match->arb_home = round(
+                (1 / $match->back_home_odds + 1 / $match->lay_odds->odds_home_lay - 1) * 100, 
+                2
+            );
+            
+            $match->arb_draw = ($match->back_draw_odds && $match->lay_odds->odds_draw_lay) 
+                ? round(
+                    (1 / $match->back_draw_odds + 1 / $match->lay_odds->odds_draw_lay - 1) * 100, 
+                    2
+                ) 
+                : null;
+            
+            $match->arb_away = round(
+                (1 / $match->back_away_odds + 1 / $match->lay_odds->odds_away_lay - 1) * 100, 
+                2
+            );
+            
+            // Average arbitrage (excluding null values)
+            $arbs = array_filter([$match->arb_home, $match->arb_draw, $match->arb_away], 'is_numeric');
+            $match->avg_arb = !empty($arbs) ? round(array_sum($arbs) / count($arbs), 2) : null;
+        }
+    }
+
+    // Get unique filters
+    $sports = DB::table('sports')->pluck('name')->unique();
+    // $competitions = DB::table('competitions')->pluck('name')->unique();
+
+    $competitions = DB::table('matches')->pluck('bookmaker')->unique();
+
+    return view('parents.matches.index', compact('backMatches', 'sports', 'competitions'));
+}
 
     public function show($id)
     {
