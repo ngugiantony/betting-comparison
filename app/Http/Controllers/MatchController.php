@@ -132,7 +132,7 @@ class MatchController extends Controller
     $sortOrder = $request->get('sort_order', 'asc');
     $backOddsQuery->orderBy($sortBy, $sortOrder);
 
-    $backMatches = $backOddsQuery->paginate(20);
+    $backMatches = $backOddsQuery->paginate(20000);
 
     // Get all lay odds
     $layOdds = $layOddsQuery->get();
