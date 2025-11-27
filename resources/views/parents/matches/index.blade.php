@@ -1,6 +1,29 @@
 @extends('parents.master')
 @section('content')
     <div class="container-fluid mt-4 px-3 px-lg-4">
+        <div class="row current-plan-banner">
+            <div class="col-4">
+
+                <div class="banner-info">
+                    <span class="current-plan-label">
+                        <i class="fas fa-info-circle"></i>
+                        Free Plan
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <h2 class="banner-title">You're currently on the Free plan</h2>
+            </div>
+
+            <div class="col-md-4">
+                <div class="banner-action">
+                    <a href="{{ route('pricing.index')}}" class="btn-upgrade"> Upgrade Your Plan</a>
+                    
+                </div>
+            </div>
+
+        </div>
         <div class="row">
             <div class="col-12">
                 <div class="  shadow-lg">
@@ -23,7 +46,8 @@
                     </div> --}}
 
                     <!-- Filters -->
-                    <div class="card-body bg-white border-bottom" style=" background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="card-body bg-white border-bottom"
+                        style=" background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <form method="GET" action="{{ route('matches.index') }}">
                             <div class="row g-3">
                                 <div class="col-lg-3 col-md-6">
@@ -70,8 +94,7 @@
                                     <button type="submit" class="btn btn-success btn-sm px-4">
                                         <i class="fas fa-search mr-1"></i> Search
                                     </button>
-                                    <a href="{{ route('matches.index') }}"
-                                        class="btn btn-outline-danger btn-sm px-4 ml-2">
+                                    <a href="{{ route('matches.index') }}" class="btn btn-outline-danger btn-sm px-4 ml-2">
                                         <i class="fas fa-redo mr-1"></i> Reset
                                     </a>
                                 </div>
@@ -81,7 +104,8 @@
 
                     <!-- Responsive Table -->
                     <div class="mt-3 mx-2 table-responsive">
-                        <table id="datatable-buttons" class="table table-sm table-hover align-middle mb-0 professional-table">
+                        <table id="datatable-buttons"
+                            class="table table-sm table-hover align-middle mb-0 professional-table">
                             <thead class="table-light">
                                 <tr>
                                     <th class="border-top-0 text-uppercase small fw-semibold text-muted">Sport</th>
@@ -93,7 +117,7 @@
                                     <th
                                         class="border-top-0 text-uppercase small fw-semibold text-muted text-center d-none d-lg-table-cell">
                                         Bookmaker</th>
-                                        <th
+                                    <th
                                         class="border-top-0 text-uppercase small fw-semibold text-muted text-center d-none d-lg-table-cell">
                                         Exchange</th>
                                     <th class="border-top-0 text-uppercase small fw-semibold text-muted text-center">Lay
@@ -139,7 +163,7 @@
                                         <td class="text-center align-middle d-none d-lg-table-cell bookmaker">
                                             <span class="bookmaker-badge">{{ $match->back_bookmaker }}</span>
                                         </td>
-                                         <td class="text-center align-middle ">
+                                        <td class="text-center align-middle ">
                                             <span class="badge bg-danger">Orbitxch</span>
                                         </td>
                                         <td class="text-center align-middle">
@@ -206,8 +230,8 @@
                                                 <span class="bookmaker-badge">{{ $match->back_bookmaker }}</span>
                                             </td>
                                             <td class="text-center align-middle ">
-                                            <span class="badge bg-danger">Orbitxch</span>
-                                        </td>
+                                                <span class="badge bg-danger">Orbitxch</span>
+                                            </td>
                                             <td class="text-center align-middle">
                                                 <div class="odds-display lay-odds">
                                                     <div class="odds-value text-muted">
@@ -311,7 +335,7 @@
                     </div>
 
                     <!-- Pagination -->
-                   
+
                 </div>
             </div>
         </div>
@@ -559,6 +583,163 @@
             }
         });
     </script>
+    <style>
+        .pricing-wrapper {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 4rem 0;
+        }
+
+        .pricing-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-20px, -20px);
+            }
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-header p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .current-plan-banner {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-plan-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .banner-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .banner-info {
+            flex: 1;
+        }
+
+        .current-plan-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .banner-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .banner-description {
+            color: #718096;
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        .banner-action {
+            flex-shrink: 0;
+        }
+
+        .btn-upgrade {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .btn-upgrade:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.6);
+            color: white;
+        }
+
+        .btn-upgrade i {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .banner-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .banner-title {
+                font-size: 1.5rem;
+            }
+
+            .btn-upgrade {
+                width: 100%;
+                justify-content: center;
+            }
+    </style>
 
     <style>
         /* Professional Design System */
