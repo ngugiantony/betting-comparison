@@ -551,7 +551,9 @@
 
             // Conversion rate
             const averageProfit = (ifBackWins + ifBackLoses) / 2;
-            const conversionRate = (averageProfit / freebetStake) * 100;
+            const conversionRate =  (averageProfit / freebetStake) * 100;
+                         // const conversionRate =  ((((backOdds - 1) - (layOdds -1))  * ((backOdds - 1) / (layOdds - commission))) / (backOdds - 1)) * 100
+
 
             // Display results
             $('#resultBackOdds').text(backOdds.toFixed(2));
