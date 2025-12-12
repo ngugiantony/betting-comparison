@@ -145,7 +145,8 @@
                                                     <i class="fas fa-circle small"></i> {{ $match->home_name }}
                                                 </div>
                                                 <small class="text-muted d-block mt-1">
-                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y, H:i') : 'TBD' }}
+                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y') : 'TBD' }}
+                                                    {{$match->event_time}}
                                                 </small>
                                             </div>
                                         </td>
@@ -211,7 +212,8 @@
                                                         <i class="fas fa-circle small"></i> Draw
                                                     </div>
                                                     <small class="text-muted d-block mt-1">
-                                                        {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y, H:i') : 'TBD' }}
+                                                        {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y') : 'TBD' }}
+                                                         {{$match->event_time}}
                                                     </small>
                                                 </div>
                                             </td>
@@ -272,7 +274,8 @@
                                                     <i class="fas fa-circle small"></i> {{ $match->away_name }}
                                                 </div>
                                                 <small class="text-muted d-block mt-1">
-                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y, H:i') : 'TBD' }}
+                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y') : 'TBD' }}
+                                                     {{$match->event_time}}
                                                 </small>
                                             </div>
                                         </td>

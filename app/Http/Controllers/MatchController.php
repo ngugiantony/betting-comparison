@@ -59,7 +59,7 @@ class MatchController extends Controller
     }
     public function index(Request $request)
 {
-    // Get back odds from matches table (Betsson, Bwin, NetBet, ParionsSport, etc.)
+    // Get back odds from matches table (Bwin, NetBet, ParionsSport, etc.)
     $backOddsQuery = DB::table('matches')
         ->join('sports', 'matches.sport_id', '=', 'sports.id')
         ->leftJoin('competitions', 'matches.competition_id', '=', 'competitions.id')
