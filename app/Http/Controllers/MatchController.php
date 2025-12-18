@@ -40,7 +40,7 @@ class MatchController extends Controller
 
     // Apply sport filter
     if ($sport) {
-        $backOddsQuery->where('sport_key', 'LIKE', '%' . $sport . '%' );
+        $backOddsQuery->where('sport_title',  $sport);
     }
 
     // Apply bookmaker filter
