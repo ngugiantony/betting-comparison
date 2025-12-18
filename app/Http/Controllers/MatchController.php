@@ -7,12 +7,14 @@ use Illuminate\Support\Facades\DB;
 
 class MatchController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
 {
-    // Get filters - Remove time restriction or make it very large
+    // Get filters
     $sport = $request->get('sport');
-    $bookmaker = $request->get('bookmaker');
-    $hours = $request->get('hours'); // No default, optional filter
+    $bookmaker = $request->get('competition'); // Changed to match form field name
+    $homeTeam = $request->get('home_team');
+    $awayTeam = $request->get('away_team');
+    $hours = $request->get('hours');
     
     // Build optimized back odds query
     $backOddsQuery = DB::table('bookmaker_back_odds')
@@ -46,12 +48,22 @@ class MatchController extends Controller
         $backOddsQuery->where('bookmaker', $bookmaker);
     }
 
+    // Apply home team filter
+    if ($homeTeam) {
+        $backOddsQuery->where('home_team', 'LIKE', '%' . $homeTeam . '%');
+    }
+
+    // Apply away team filter
+    if ($awayTeam) {
+        $backOddsQuery->where('away_team', 'LIKE', '%' . $awayTeam . '%');
+    }
+
     // Sort
     $sortBy = $request->get('sort_by', 'commence_time');
     $sortOrder = $request->get('sort_order', 'asc');
     $backOddsQuery->orderBy($sortBy, $sortOrder);
 
-    // Paginate - increased default to show more records
+    // Paginate
     $perPage = $request->get('per_page', 5000);
     $backMatches = $backOddsQuery->paginate($perPage);
 
