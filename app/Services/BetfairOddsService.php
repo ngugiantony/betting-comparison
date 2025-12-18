@@ -12,9 +12,9 @@ class BetfairOddsService
     private $apiKey;
     private $baseUrl = 'https://api.the-odds-api.com/v4';
 
-    // Sport mappings for soccer, tennis, and handball
+    // Sport mappings for all supported sports
     private $supportedSports = [
-// Football
+        // Football/Soccer
         'soccer_france_ligue_one',
         'soccer_france_ligue_two',
         'soccer_epl',
@@ -69,7 +69,7 @@ class BetfairOddsService
 
     public function __construct()
     {
-        $this->apiKey = "0d6ab7a90ebed53c7cbfaabfb5cb3256";
+        $this->apiKey = config('services.odds_api.key', "0d6ab7a90ebed53c7cbfaabfb5cb3256");
     }
 
     /**
@@ -83,15 +83,7 @@ class BetfairOddsService
             ]);
 
             if ($response->successful()) {
-                $allSports = $response->json();
-                
-                // Filter for soccer, tennis, and handball
-                $filtered = array_filter($allSports, function($sport) {
-                    $group = $sport['group'] ?? '';
-                    return in_array($group, ['Soccer', 'Tennis', 'Handball']);
-                });
-
-                return array_values($filtered);
+                return $response->json();
             }
 
             Log::error('Failed to fetch sports list', ['response' => $response->body()]);
@@ -124,10 +116,11 @@ class BetfairOddsService
             if ($response->successful()) {
                 $data = $response->json();
 
-                Log::info(json_encode($data, JSON_PRETTY_PRINT));
+                // Log the response for debugging
+                Log::info("Betfair API Response for {$sport}", [
+                    'matches_count' => count($data)
+                ]);
 
-
-                
                 if (empty($data)) {
                     Log::info("No matches found for: {$sport}");
                     return [];
@@ -163,7 +156,7 @@ class BetfairOddsService
         $results = [];
         foreach ($soccerLeagues as $league) {
             $results[$league] = $this->fetchBetfairLayOdds($league);
-            sleep(1); // Rate limiting - be nice to the API
+            sleep(1);
         }
 
         return $results;
@@ -181,7 +174,25 @@ class BetfairOddsService
         $results = [];
         foreach ($tennisTournaments as $tournament) {
             $results[$tournament] = $this->fetchBetfairLayOdds($tournament);
-            sleep(1); // Rate limiting
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for all basketball
+     */
+    public function fetchAllBasketballOdds()
+    {
+        $basketballLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'basketball_');
+        });
+
+        $results = [];
+        foreach ($basketballLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
         }
 
         return $results;
@@ -199,21 +210,155 @@ class BetfairOddsService
         $results = [];
         foreach ($handballLeagues as $league) {
             $results[$league] = $this->fetchBetfairLayOdds($league);
-            sleep(1); // Rate limiting
+            sleep(1);
         }
 
         return $results;
     }
 
     /**
-     * Fetch odds for all supported sports (soccer, tennis, handball)
+     * Fetch odds for all ice hockey
+     */
+    public function fetchAllIceHockeyOdds()
+    {
+        $iceHockeyLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'icehockey_');
+        });
+
+        $results = [];
+        foreach ($iceHockeyLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for American football
+     */
+    public function fetchAllAmericanFootballOdds()
+    {
+        $americanFootballLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'americanfootball_');
+        });
+
+        $results = [];
+        foreach ($americanFootballLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for Rugby Union
+     */
+    public function fetchAllRugbyUnionOdds()
+    {
+        $rugbyUnionLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'rugbyunion_');
+        });
+
+        $results = [];
+        foreach ($rugbyUnionLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for Rugby League
+     */
+    public function fetchAllRugbyLeagueOdds()
+    {
+        $rugbyLeagueLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'rugbyleague_');
+        });
+
+        $results = [];
+        foreach ($rugbyLeagueLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for MMA
+     */
+    public function fetchAllMMAOdds()
+    {
+        $mmaLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'mma_');
+        });
+
+        $results = [];
+        foreach ($mmaLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for Boxing
+     */
+    public function fetchAllBoxingOdds()
+    {
+        $boxingLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'boxing_');
+        });
+
+        $results = [];
+        foreach ($boxingLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for Volleyball
+     */
+    public function fetchAllVolleyballOdds()
+    {
+        $volleyballLeagues = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'volleyball');
+        });
+
+        $results = [];
+        foreach ($volleyballLeagues as $league) {
+            $results[$league] = $this->fetchBetfairLayOdds($league);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch odds for all supported sports
      */
     public function fetchAllSports()
     {
         $results = [
             'soccer' => $this->fetchAllSoccerOdds(),
             'tennis' => $this->fetchAllTennisOdds(),
+            'basketball' => $this->fetchAllBasketballOdds(),
             'handball' => $this->fetchAllHandballOdds(),
+            'ice_hockey' => $this->fetchAllIceHockeyOdds(),
+            'american_football' => $this->fetchAllAmericanFootballOdds(),
+            'rugby_union' => $this->fetchAllRugbyUnionOdds(),
+            'rugby_league' => $this->fetchAllRugbyLeagueOdds(),
+            'mma' => $this->fetchAllMMAOdds(),
+            'boxing' => $this->fetchAllBoxingOdds(),
+            'volleyball' => $this->fetchAllVolleyballOdds(),
         ];
 
         return $results;
@@ -329,8 +474,32 @@ class BetfairOddsService
             'tennis_matches' => BetfairLayOdd::upcoming()
                 ->where('sport_key', 'like', 'tennis_%')
                 ->count(),
+            'basketball_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'basketball_%')
+                ->count(),
             'handball_matches' => BetfairLayOdd::upcoming()
                 ->where('sport_key', 'like', 'handball_%')
+                ->count(),
+            'ice_hockey_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'icehockey_%')
+                ->count(),
+            'american_football_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'americanfootball_%')
+                ->count(),
+            'rugby_union_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'rugbyunion_%')
+                ->count(),
+            'rugby_league_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'rugbyleague_%')
+                ->count(),
+            'mma_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'mma_%')
+                ->count(),
+            'boxing_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'boxing_%')
+                ->count(),
+            'volleyball_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'volleyball%')
                 ->count(),
             'last_update' => BetfairLayOdd::max('last_update'),
             'oldest_match' => BetfairLayOdd::upcoming()->min('commence_time'),
@@ -350,4 +519,11 @@ class BetfairOddsService
         return $deleted;
     }
     
+    /**
+     * Get supported sports list
+     */
+    public function getSupportedSports()
+    {
+        return $this->supportedSports;
+    }
 }
