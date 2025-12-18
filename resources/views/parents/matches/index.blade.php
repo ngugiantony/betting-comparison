@@ -18,8 +18,8 @@
 
             <div class="col-md-4">
                 <div class="banner-action">
-                    <a href="{{ route('pricing.index')}}" class="btn-upgrade"> Upgrade Your Plan</a>
-                    
+                    <a href="{{ route('pricing.index') }}" class="btn-upgrade"> Upgrade Your Plan</a>
+
                 </div>
             </div>
 
@@ -104,6 +104,7 @@
 
                     <!-- Responsive Table -->
                     <div class="mt-3 mx-2 table-responsive">
+
                         <table id="datatable-buttons"
                             class="table table-sm table-hover align-middle mb-0 professional-table">
                             <thead class="table-light">
@@ -145,8 +146,7 @@
                                                     <i class="fas fa-circle small"></i> {{ $match->home_name }}
                                                 </div>
                                                 <small class="text-muted d-block mt-1">
-                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y') : 'TBD' }}
-                                                    {{$match->event_time}}
+                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y H:i') : 'TBD' }}
                                                 </small>
                                             </div>
                                         </td>
@@ -157,23 +157,27 @@
                                             <div class="odds-display back-odds">
                                                 <div class="odds-value">{{ number_format($match->back_home_odds, 2) }}
                                                 </div>
-                                                <small
-                                                    class="odds-source d-none d-md-block">{{ $match->back_bookmaker }}</small>
+                                                {{-- <small class="odds-source d-none d-md-block">{{ $match->back_bookmaker }}</small> --}}
                                             </div>
                                         </td>
                                         <td class="text-center align-middle d-none d-lg-table-cell bookmaker">
-                                            <span class="bookmaker-badge">{{ $match->back_bookmaker }}</span>
+                                            <span class="bookmaker-badge bookmaker-{{ $match->back_bookmaker }}">
+                                                {{ strtoupper(str_replace('_fr', '', $match->back_bookmaker)) }}
+                                            </span>
+
                                         </td>
-                                        <td class="text-center align-middle ">
-                                            <span class="badge bg-danger">Orbitxch</span>
+                                        <td class="text-center align-middle d-none d-lg-table-cell">
+                                            <span class="badge bg-danger">Orbtix</span>
                                         </td>
                                         <td class="text-center align-middle">
                                             @if ($match->lay_odds)
                                                 <div class="odds-display lay-odds">
                                                     <div class="odds-value">
-                                                        {{ number_format($match->lay_odds->odds_home_lay, 2) }}</div>
-                                                    <small
-                                                        class="odds-volume d-none d-md-block">{{ number_format($match->lay_odds->volume_home_lay) }}</small>
+                                                        {{ number_format($match->lay_odds->odds_home_lay, 2) }}
+                                                    </div>
+                                                    {{-- <small class="odds-volume d-none d-md-block">
+                                                        {{ number_format($match->lay_odds->volume_home_lay ?? 0) }}
+                                                    </small> --}}
                                                 </div>
                                             @else
                                                 <span class="text-muted">0.00</span>
@@ -212,8 +216,7 @@
                                                         <i class="fas fa-circle small"></i> Draw
                                                     </div>
                                                     <small class="text-muted d-block mt-1">
-                                                        {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y') : 'TBD' }}
-                                                         {{$match->event_time}}
+                                                        {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y H:i') : 'TBD' }}
                                                     </small>
                                                 </div>
                                             </td>
@@ -224,22 +227,23 @@
                                                 <div class="odds-display back-odds">
                                                     <div class="odds-value">{{ number_format($match->back_draw_odds, 2) }}
                                                     </div>
-                                                    <small
-                                                        class="odds-source d-none d-md-block">{{ $match->back_bookmaker }}</small>
+                                                    {{-- <small class="odds-source d-none d-md-block">{{ $match->back_bookmaker }}</small> --}}
                                                 </div>
                                             </td>
                                             <td class="text-center align-middle d-none d-lg-table-cell bookmaker">
-                                                <span class="bookmaker-badge">{{ $match->back_bookmaker }}</span>
+                                                <span class="bookmaker-badge bookmaker-{{ $match->back_bookmaker }}">
+                                                    {{ strtoupper(str_replace('_fr', '', $match->back_bookmaker)) }}
+                                                </span>
+
                                             </td>
-                                            <td class="text-center align-middle ">
-                                                <span class="badge bg-danger">Orbitxch</span>
+                                            <td class="text-center align-middle d-none d-lg-table-cell">
+                                                <span class="badge bg-danger">Orbtix</span>
                                             </td>
                                             <td class="text-center align-middle">
                                                 <div class="odds-display lay-odds">
-                                                    <div class="odds-value text-muted">
+                                                    <div class="odds-value">
                                                         {{ number_format(optional($match->lay_odds)->odds_draw_lay ?? 0, 2) }}
                                                     </div>
-                                                    {{-- <small  class="odds-volume d-none d-md-block">{{ number_format(optional($match->lay_odds)->volume_draw_lay ?? 0) }}</small> --}}
                                                 </div>
                                             </td>
                                             <td class="text-center align-middle">
@@ -274,8 +278,7 @@
                                                     <i class="fas fa-circle small"></i> {{ $match->away_name }}
                                                 </div>
                                                 <small class="text-muted d-block mt-1">
-                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y') : 'TBD' }}
-                                                     {{$match->event_time}}
+                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y H:i') : 'TBD' }}
                                                 </small>
                                             </div>
                                         </td>
@@ -286,23 +289,27 @@
                                             <div class="odds-display back-odds">
                                                 <div class="odds-value">{{ number_format($match->back_away_odds, 2) }}
                                                 </div>
-                                                <small
-                                                    class="odds-source d-none d-md-block">{{ $match->back_bookmaker }}</small>
+                                                
                                             </div>
                                         </td>
                                         <td class="text-center align-middle d-none d-lg-table-cell bookmaker">
-                                            <span class="bookmaker-badge">{{ $match->back_bookmaker }}</span>
+                                            <span class="bookmaker-badge bookmaker-{{ $match->back_bookmaker }}">
+                                                {{ strtoupper(str_replace('_fr', '', $match->back_bookmaker)) }}
+                                            </span>
+
                                         </td>
-                                        <td class="text-center align-middle ">
-                                            <span class="badge bg-danger">Orbitxch</span>
+                                        <td class="text-center align-middle d-none d-lg-table-cell">
+                                            <span class="badge bg-danger">Orbtix</span>
                                         </td>
                                         <td class="text-center align-middle">
                                             @if ($match->lay_odds)
                                                 <div class="odds-display lay-odds">
                                                     <div class="odds-value">
-                                                        {{ number_format($match->lay_odds->odds_away_lay, 2) }}</div>
-                                                    <small
-                                                        class="odds-volume d-none d-md-block">{{ number_format($match->lay_odds->volume_away_lay) }}</small>
+                                                        {{ number_format($match->lay_odds->odds_away_lay, 2) }}
+                                                    </div>
+                                                    {{-- <small class="odds-volume d-none d-md-block">
+                                                        {{ number_format($match->lay_odds->volume_away_lay ?? 0) }}
+                                                    </small> --}}
                                                 </div>
                                             @else
                                                 <span class="text-muted">0.00</span>
@@ -324,7 +331,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-5">
+                                        <td colspan="8" class="text-center py-5">
                                             <div class="empty-state">
                                                 <i class="fas fa-search fa-3x text-muted mb-3 opacity-50"></i>
                                                 <h6 class="text-muted mb-1">No matches found</h6>
@@ -335,6 +342,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+
                     </div>
 
                     <!-- Pagination -->
@@ -506,8 +514,8 @@
         $('#calculatorModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget);
             var backOdds = button.data('back-odds');
-            // var layOdds = button.data('lay-odds');
-            var layOdds = 5;
+            var layOdds = button.data('lay-odds');
+
             var match = button.data('match');
             var outcome = button.data('outcome');
             var bookmaker = button.data('bookmaker');
@@ -554,8 +562,8 @@
 
             // Conversion rate
             const averageProfit = (ifBackWins + ifBackLoses) / 2;
-            const conversionRate =  (averageProfit / freebetStake) * 100;
-                         // const conversionRate =  ((((backOdds - 1) - (layOdds -1))  * ((backOdds - 1) / (layOdds - commission))) / (backOdds - 1)) * 100
+            const conversionRate = (averageProfit / freebetStake) * 100;
+            // const conversionRate =  ((((backOdds - 1) - (layOdds -1))  * ((backOdds - 1) / (layOdds - commission))) / (backOdds - 1)) * 100
 
 
             // Display results
@@ -589,6 +597,54 @@
         });
     </script>
     <style>
+        .bookmaker-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff !important;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        /* FR bookmakers */
+        .bookmaker-betclic_fr {
+            background: linear-gradient(135deg, #e10600, #b30000);
+        }
+
+        .bookmaker-netbet_fr {
+            background: linear-gradient(135deg, #0a1aff, #0011aa);
+        }
+
+        .bookmaker-parionssport_fr {
+            background: linear-gradient(135deg, #007a3d, #005c2d);
+        }
+
+        .bookmaker-pmu_fr {
+            background: linear-gradient(135deg, #007f3f, #004d26);
+        }
+
+        .bookmaker-unibet_fr {
+            background: linear-gradient(135deg, #1bbf00, #148c00);
+        }
+
+        .bookmaker-winamax_fr {
+            background: linear-gradient(135deg, #1c1c1c, #000000);
+        }
+
+        /* Other bookmakers */
+        .bookmaker-vbet {
+            background: linear-gradient(135deg, #ff6a00, #cc5500);
+        }
+
+        .bookmaker-olybet {
+            background: linear-gradient(135deg, #0066ff, #003d99);
+        }
+
+        .bookmaker-bwin {
+            background: linear-gradient(135deg, #000000, #333333);
+        }
+
         .pricing-wrapper {
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
