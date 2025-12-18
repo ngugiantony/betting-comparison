@@ -21,9 +21,9 @@ class BookmakerOddsService
         'winamax_fr'
     ];
 
-    // Sport mappings
+    // Sport mappings - ALL SPORTS
     private $sports = [
-        // Football
+        // Football/Soccer
         'soccer_france_ligue_one',
         'soccer_france_ligue_two',
         'soccer_epl',
@@ -59,22 +59,32 @@ class BookmakerOddsService
         // American Football
         'americanfootball_nfl',
         
-        // Rugby
+        // Rugby Union (XV)
         'rugbyunion_six_nations',
         'rugbyunion_top_14',
+        
+        // Rugby League (XIII)
         'rugbyleague_nrl',
         
-        // Combat Sports
+        // MMA
         'mma_mixed_martial_arts',
+        
+        // Boxing
         'boxing_boxing',
         
         // Volleyball
         'volleyball',
+        
+        // Golf
+        'golf_pga_championship',
+        'golf_masters_tournament',
+        'golf_us_open',
+        'golf_the_open_championship',
     ];
 
     public function __construct()
     {
-        $this->apiKey = "0d6ab7a90ebed53c7cbfaabfb5cb3256";
+        $this->apiKey = config('services.odds_api.key', "0d6ab7a90ebed53c7cbfaabfb5cb3256");
     }
 
     /**
@@ -258,16 +268,90 @@ class BookmakerOddsService
     }
 
     /**
+     * Fetch American football odds
+     */
+    public function fetchAmericanFootballOdds()
+    {
+        return $this->fetchBySportCategory('americanfootball');
+    }
+
+    /**
+     * Fetch rugby union odds
+     */
+    public function fetchRugbyUnionOdds()
+    {
+        return $this->fetchBySportCategory('rugbyunion');
+    }
+
+    /**
+     * Fetch rugby league odds
+     */
+    public function fetchRugbyLeagueOdds()
+    {
+        return $this->fetchBySportCategory('rugbyleague');
+    }
+
+    /**
+     * Fetch MMA odds
+     */
+    public function fetchMMAOdds()
+    {
+        return $this->fetchBySportCategory('mma');
+    }
+
+    /**
+     * Fetch boxing odds
+     */
+    public function fetchBoxingOdds()
+    {
+        return $this->fetchBySportCategory('boxing');
+    }
+
+    /**
+     * Fetch volleyball odds
+     */
+    public function fetchVolleyballOdds()
+    {
+        $volleyballSports = array_filter($this->sports, function($sport) {
+            return str_starts_with($sport, 'volleyball');
+        });
+
+        $results = [];
+        foreach ($volleyballSports as $sport) {
+            $results[$sport] = $this->fetchOddsForSport($sport);
+            sleep(1);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch golf odds
+     */
+    public function fetchGolfOdds()
+    {
+        return $this->fetchBySportCategory('golf');
+    }
+
+    /**
      * Fetch odds for all sports
      */
     public function fetchAllSports()
     {
-        $results = [];
-        
-        foreach ($this->sports as $sport) {
-            $results[$sport] = $this->fetchOddsForSport($sport);
-            sleep(1); // Rate limiting
-        }
+        $results = [
+            'football' => $this->fetchFootballOdds(),
+            'tennis' => $this->fetchTennisOdds(),
+            'basketball' => $this->fetchBasketballOdds(),
+            'handball' => $this->fetchHandballOdds(),
+            'ice_hockey' => $this->fetchIceHockeyOdds(),
+            'american_football' => $this->fetchAmericanFootballOdds(),
+            'rugby_union' => $this->fetchRugbyUnionOdds(),
+            'rugby_league' => $this->fetchRugbyLeagueOdds(),
+            'mma' => $this->fetchMMAOdds(),
+            'boxing' => $this->fetchBoxingOdds(),
+            'volleyball' => $this->fetchVolleyballOdds(),
+            'golf' => $this->fetchGolfOdds(),
+        ];
 
         return $results;
     }
@@ -351,7 +435,14 @@ class BookmakerOddsService
             'tennis' => 'tennis_%',
             'basketball' => 'basketball_%',
             'handball' => 'handball_%',
-            'ice_hockey' => 'icehockey_%'
+            'ice_hockey' => 'icehockey_%',
+            'american_football' => 'americanfootball_%',
+            'rugby_union' => 'rugbyunion_%',
+            'rugby_league' => 'rugbyleague_%',
+            'mma' => 'mma_%',
+            'boxing' => 'boxing_%',
+            'volleyball' => 'volleyball%',
+            'golf' => 'golf_%',
         ];
 
         foreach ($sportCategories as $category => $pattern) {
@@ -381,5 +472,22 @@ class BookmakerOddsService
     public function getSupportedSports()
     {
         return $this->sports;
+    }
+    
+    /**
+     * Get bookmaker name in readable format
+     */
+    public function getBookmakerName($key)
+    {
+        $names = [
+            'betclic_fr' => 'Betclic',
+            'netbet_fr' => 'NetBet',
+            'parionssport_fr' => 'Parions Sport',
+            'pmu_fr' => 'PMU',
+            'unibet_fr' => 'Unibet',
+            'winamax_fr' => 'Winamax'
+        ];
+
+        return $names[$key] ?? $key;
     }
 }

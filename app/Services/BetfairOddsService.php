@@ -65,6 +65,12 @@ class BetfairOddsService
         
         // Volleyball
         'volleyball',
+
+         // Golf
+        'golf_pga_championship',
+        'golf_masters_tournament',
+        'golf_us_open',
+        'golf_the_open_championship',
     ];
 
     public function __construct()
@@ -142,6 +148,24 @@ class BetfairOddsService
             Log::error("Error fetching odds for {$sport}: " . $e->getMessage());
             return null;
         }
+    }
+
+        /**
+     * Fetch odds for Golf
+     */
+    public function fetchAllGolfOdds()
+    {
+        $golfTournaments = array_filter($this->supportedSports, function($sport) {
+            return str_starts_with($sport, 'golf_');
+        });
+
+        $results = [];
+        foreach ($golfTournaments as $tournament) {
+            $results[$tournament] = $this->fetchBetfairLayOdds($tournament);
+            sleep(1);
+        }
+
+        return $results;
     }
 
     /**
@@ -359,6 +383,7 @@ class BetfairOddsService
             'mma' => $this->fetchAllMMAOdds(),
             'boxing' => $this->fetchAllBoxingOdds(),
             'volleyball' => $this->fetchAllVolleyballOdds(),
+            'golf' => $this->fetchAllGolfOdds(),
         ];
 
         return $results;
@@ -500,6 +525,9 @@ class BetfairOddsService
                 ->count(),
             'volleyball_matches' => BetfairLayOdd::upcoming()
                 ->where('sport_key', 'like', 'volleyball%')
+                ->count(),
+            'golf_matches' => BetfairLayOdd::upcoming()
+                ->where('sport_key', 'like', 'golf_%')
                 ->count(),
             'last_update' => BetfairLayOdd::max('last_update'),
             'oldest_match' => BetfairLayOdd::upcoming()->min('commence_time'),
