@@ -133,7 +133,7 @@
                                     <tr class="match-row">
                                         <td class="align-middle">
                                             <span class="badge badge-soft-primary">
-                                                {{ $match->competition_name ?? $match->sport_name }}
+                                                {{  $match->sport_name }}
                                             </span>
                                         </td>
                                         <td class="align-middle">
@@ -203,7 +203,7 @@
                                         <tr class="match-row">
                                             <td class="align-middle">
                                                 <span class="badge badge-soft-primary">
-                                                    {{ $match->competition_name ?? $match->sport_name }}
+                                                    {{  $match->sport_name }}
                                                 </span>
                                             </td>
                                             <td class="align-middle">
@@ -265,7 +265,7 @@
                                     <tr class="match-row match-row-last">
                                         <td class="align-middle">
                                             <span class="badge badge-soft-primary">
-                                                {{ $match->competition_name ?? $match->sport_name }}
+                                                {{ $match->sport_name }}
                                             </span>
                                         </td>
                                         <td class="align-middle">
