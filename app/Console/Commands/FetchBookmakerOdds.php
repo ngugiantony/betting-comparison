@@ -12,8 +12,10 @@ class FetchBookmakerOdds extends Command
                             {--markets= : Comma-separated list of markets}
                             {--all-markets : Fetch all available markets for the sport}
                             {--all-sports : Fetch all sports}
+                            {--all-sports-all-markets : Fetch all sports with all their markets (WARNING: Heavy API usage!)}
                             {--event= : Fetch specific event ID}
-                            {--show-markets : Show available markets for a sport}';
+                            {--show-markets : Show available markets for a sport}
+                            {--featured-only : Fetch only featured markets (h2h, spreads, totals)}';
 
     protected $description = 'Fetch odds from The Odds API with sport-specific markets';
 
