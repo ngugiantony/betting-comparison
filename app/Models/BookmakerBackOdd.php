@@ -19,7 +19,8 @@ class BookmakerBackOdd extends Model
         'draw_back_odds',
         'market_key',
         'last_update',
-        'raw_data'
+        'raw_data',
+        'market_data',
     ];
 
     protected $casts = [
@@ -29,6 +30,7 @@ class BookmakerBackOdd extends Model
         'home_back_odds' => 'decimal:2',
         'away_back_odds' => 'decimal:2',
         'draw_back_odds' => 'decimal:2',
+        'market_data' => 'array',
     ];
 
     // Scope to get upcoming matches
