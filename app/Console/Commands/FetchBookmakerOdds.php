@@ -2,136 +2,210 @@
 
 namespace App\Console\Commands;
 
-use App\Services\BookmakerOddsService;
 use Illuminate\Console\Command;
+use App\Services\BookmakerOddsService;
 
 class FetchBookmakerOdds extends Command
 {
-    protected $signature = 'odds:fetch 
-                            {--sport= : Specific sport to fetch}
-                            {--markets= : Comma-separated list of markets}
-                            {--all-markets : Fetch all available markets for the sport}
-                            {--all-sports : Fetch all sports}
-                            {--all-sports-all-markets : Fetch all sports with all their markets (WARNING: Heavy API usage!)}
-                            {--event= : Fetch specific event ID}
-                            {--show-markets : Show available markets for a sport}
-                            {--featured-only : Fetch only featured markets (h2h, spreads, totals)}';
+    protected $signature = 'bookmaker:fetch 
+                            {sport? : Specific sport to fetch}
+                            {--all : Fetch all supported sports}
+                            {--football : Fetch all football/soccer}
+                            {--tennis : Fetch all tennis}
+                            {--basketball : Fetch all basketball}
+                            {--handball : Fetch all handball}
+                            {--ice-hockey : Fetch all ice hockey}
+                            {--american-football : Fetch all american football}
+                            {--rugby-union : Fetch all rugby union}
+                            {--rugby-league : Fetch all rugby league}
+                            {--mma : Fetch all MMA}
+                            {--boxing : Fetch all boxing}
+                            {--volleyball : Fetch all volleyball}
+                            {--golf : Fetch all golf}';
 
-    protected $description = 'Fetch odds from The Odds API with sport-specific markets';
+    protected $description = 'Fetch odds from all French bookmakers (Betclic, NetBet, Parions Sport, PMU, Unibet, Winamax)';
 
-    public function handle(BookmakerOddsService $oddsService)
+    public function handle(BookmakerOddsService $service)
     {
-        // Show available markets for a sport
-        if ($this->option('show-markets') && $this->option('sport')) {
-            $sport = $this->option('sport');
-            $markets = $oddsService->getMarketsForSport($sport);
-            
-            $this->info("Available markets for {$sport}:");
-            $this->table(
-                ['Market Key', 'Market Name'],
-                collect($markets)->map(fn($m) => [$m, $oddsService->getMarketName($m)])
-            );
-            return 0;
-        }
-
-        // Fetch specific event with all markets
-        if ($this->option('event') && $this->option('sport')) {
-            $eventId = $this->option('event');
-            $sport = $this->option('sport');
-            $markets = $this->option('markets') ? explode(',', $this->option('markets')) : [];
-            
-            $this->info("Fetching event {$eventId} markets...");
-            $oddsService->fetchEventMarkets($eventId, $sport, $markets);
-            $this->info("✓ Event markets fetched!");
-            return 0;
-        }
-
-        // Fetch all available markets for a sport
-        if ($this->option('all-markets') && $this->option('sport')) {
-            $sport = $this->option('sport');
-            $this->info("Fetching ALL available markets for {$sport}...");
-            $this->warn("This will make multiple API calls!");
-            
-            $oddsService->fetchAllMarketsForSport($sport);
-            $this->info("✓ All markets fetched!");
-        }
-        
-        // Fetch specific markets for a sport
-        elseif ($this->option('markets') && $this->option('sport')) {
-            $sport = $this->option('sport');
-            $markets = explode(',', $this->option('markets'));
-            
-            $this->info("Fetching markets for {$sport}:");
-            foreach ($markets as $market) {
-                $this->line("  - {$market}");
-            }
-            
-            $oddsService->fetchOddsForMarkets($sport, $markets);
-            $this->info("✓ Markets fetched!");
-        }
-        
-        // Fetch featured markets (h2h, spreads, totals) for a sport
-        elseif ($this->option('sport')) {
-            $sport = $this->option('sport');
-            $this->info("Fetching featured markets for {$sport}...");
-            $oddsService->fetchOddsForSport($sport);
-            $this->info("✓ Featured markets fetched!");
-        }
-        
-        // Fetch all sports
-        elseif ($this->option('all-sports')) {
-            $this->info("Fetching featured markets for all sports...");
-            foreach ($oddsService->getSupportedSports() as $sport) {
-                $this->info("Processing: {$sport}");
-                $oddsService->fetchOddsForSport($sport);
-                sleep(1); // Rate limiting
-            }
-            $this->info("✓ All sports fetched!");
-        }
-        
-        else {
-            $this->error('Please specify options. Examples:');
-            $this->line('');
-            $this->line('Show available markets:');
-            $this->line('  php artisan odds:fetch --sport=soccer_epl --show-markets');
-            $this->line('');
-            $this->line('Fetch featured markets (h2h, spreads, totals):');
-            $this->line('  php artisan odds:fetch --sport=basketball_nba');
-            $this->line('');
-            $this->line('Fetch specific markets:');
-            $this->line('  php artisan odds:fetch --sport=soccer_epl --markets=h2h,btts,draw_no_bet');
-            $this->line('  php artisan odds:fetch --sport=basketball_nba --markets=h2h,spreads,totals,player_points');
-            $this->line('');
-            $this->line('Fetch ALL available markets for a sport (uses multiple API calls):');
-            $this->line('  php artisan odds:fetch --sport=americanfootball_nfl --all-markets');
-            $this->line('');
-            $this->line('Fetch specific event markets:');
-            $this->line('  php artisan odds:fetch --sport=soccer_epl --event=abc123 --markets=player_shots,player_assists');
-            return 1;
-        }
-
-        // Show statistics
-        $stats = $oddsService->getStatistics();
+        $this->info('🎯 Multi-Bookmaker Odds Fetcher');
+        $this->info('================================');
+        $this->line('Bookmakers: ' . implode(', ', array_map([$service, 'getBookmakerName'], $service->getBookmakers())));
         $this->newLine();
-        $this->info("Statistics:");
-        $this->table(
-            ['Metric', 'Value'],
-            [
-                ['Total Matches', $stats['total_matches']],
-                ['Total Records', $stats['total_records']],
-                ['Upcoming Matches', $stats['upcoming_matches']],
-            ]
-        );
 
-        if (!empty($stats['markets'])) {
+        if ($this->option('all')) {
+            $this->info('Fetching odds for ALL sports from ALL bookmakers...');
             $this->newLine();
-            $this->info("Market Distribution:");
-            foreach ($stats['markets'] as $market => $count) {
-                $marketName = $oddsService->getMarketName($market);
-                $this->line("  {$marketName} ({$market}): {$count} records");
+            
+            $sports = $service->getSupportedSports();
+            $bar = $this->output->createProgressBar(count($sports));
+            $bar->start();
+            
+            foreach ($sports as $sport) {
+                $service->fetchOddsForSport($sport);
+                $bar->advance();
+                sleep(1);
             }
+            
+            $bar->finish();
+            $this->newLine();
+        } 
+        elseif ($this->option('football')) {
+            $this->fetchCategory($service, 'FOOTBALL', 'fetchFootballOdds');
+        }
+        elseif ($this->option('tennis')) {
+            $this->fetchCategory($service, 'TENNIS', 'fetchTennisOdds');
+        }
+        elseif ($this->option('basketball')) {
+            $this->fetchCategory($service, 'BASKETBALL', 'fetchBasketballOdds');
+        }
+        elseif ($this->option('handball')) {
+            $this->fetchCategory($service, 'HANDBALL', 'fetchHandballOdds');
+        }
+        elseif ($this->option('ice-hockey')) {
+            $this->fetchCategory($service, 'ICE HOCKEY', 'fetchIceHockeyOdds');
+        }
+        elseif ($this->option('american-football')) {
+            $this->fetchCategory($service, 'AMERICAN FOOTBALL', 'fetchAmericanFootballOdds');
+        }
+        elseif ($this->option('rugby-union')) {
+            $this->fetchCategory($service, 'RUGBY UNION', 'fetchRugbyUnionOdds');
+        }
+        elseif ($this->option('rugby-league')) {
+            $this->fetchCategory($service, 'RUGBY LEAGUE', 'fetchRugbyLeagueOdds');
+        }
+        elseif ($this->option('mma')) {
+            $this->fetchCategory($service, 'MMA', 'fetchMMAOdds');
+        }
+        elseif ($this->option('boxing')) {
+            $this->fetchCategory($service, 'BOXING', 'fetchBoxingOdds');
+        }
+        elseif ($this->option('volleyball')) {
+            $this->fetchCategory($service, 'VOLLEYBALL', 'fetchVolleyballOdds');
+        }
+        elseif ($this->option('golf')) {
+            $this->fetchCategory($service, 'GOLF', 'fetchGolfOdds');
+        }
+        elseif ($sport = $this->argument('sport')) {
+            $this->info("Fetching odds for: {$sport}");
+            $this->newLine();
+            $result = $service->fetchOddsForSport($sport);
+            
+            if ($result !== null) {
+                $this->info("✓ Successfully fetched " . count($result) . " matches");
+            } else {
+                $this->error("✗ Failed to fetch odds");
+            }
+        } 
+        else {
+            $this->showUsage();
+            return;
         }
 
-        return 0;
+        $this->newLine(2);
+        $this->displayStatistics($service);
+    }
+
+    private function fetchCategory($service, $categoryName, $method)
+    {
+        $this->info("Fetching {$categoryName} odds from all bookmakers...");
+        $this->newLine();
+        $results = $service->$method();
+        $this->displayResults($results);
+    }
+
+    private function displayResults($results)
+    {
+        foreach ($results as $sport => $data) {
+            if ($data !== null && is_array($data)) {
+                $this->line("  ✓ {$sport}: " . count($data) . " matches");
+            } elseif ($data !== null) {
+                $this->line("  ✓ {$sport}: Success");
+            } else {
+                $this->line("  ✗ {$sport}: Failed");
+            }
+        }
+    }
+
+    private function displayStatistics($service)
+    {
+        $stats = $service->getStatistics();
+        
+        $this->info('📊 Database Statistics');
+        $this->line(str_repeat('=', 60));
+        $this->line("Total unique matches: {$stats['total_matches']}");
+        $this->line("Total records (all bookmakers): {$stats['total_records']}");
+        $this->line("Upcoming matches: {$stats['upcoming_matches']}");
+        $this->newLine();
+        
+        $this->line('Matches by Sport:');
+        foreach ($stats['sports'] as $sport => $count) {
+            $icon = $this->getSportIcon($sport);
+            $this->line("  {$icon} " . ucfirst(str_replace('_', ' ', $sport)) . ": {$count} matches");
+        }
+        
+        $this->newLine();
+        $this->line('Records by Bookmaker:');
+        foreach ($stats['bookmakers'] as $bookmaker => $count) {
+            $name = $service->getBookmakerName($bookmaker);
+            $this->line("  {$name}: {$count} records");
+        }
+        
+        if ($stats['last_update']) {
+            $this->newLine();
+            $this->line("Last update: {$stats['last_update']}");
+        }
+    }
+
+    private function getSportIcon($sport)
+    {
+        $icons = [
+            'football' => '⚽',
+            'tennis' => '🎾',
+            'basketball' => '🏀',
+            'handball' => '🤾',
+            'ice_hockey' => '🏒',
+            'american_football' => '🏈',
+            'rugby_union' => '🏉',
+            'rugby_league' => '🏉',
+            'mma' => '🥊',
+            'boxing' => '🥊',
+            'volleyball' => '🏐',
+            'golf' => '⛳',
+        ];
+
+        return $icons[$sport] ?? '🏆';
+    }
+
+    private function showUsage()
+    {
+        $this->warn('Please specify a sport or use one of the options:');
+        $this->newLine();
+        
+        $this->line('Sport Categories:');
+        $this->line('  --all                  Fetch all sports');
+        $this->line('  --football             Fetch all football/soccer');
+        $this->line('  --tennis               Fetch all tennis');
+        $this->line('  --basketball           Fetch all basketball');
+        $this->line('  --handball             Fetch all handball');
+        $this->line('  --ice-hockey           Fetch all ice hockey');
+        $this->line('  --american-football    Fetch all american football');
+        $this->line('  --rugby-union          Fetch all rugby union');
+        $this->line('  --rugby-league         Fetch all rugby league');
+        $this->line('  --mma                  Fetch all MMA');
+        $this->line('  --boxing               Fetch all boxing');
+        $this->line('  --volleyball           Fetch all volleyball');
+        $this->line('  --golf                 Fetch all golf');
+        
+        $this->newLine();
+        $this->info('Or specify a specific sport:');
+        $this->line('  php artisan bookmaker:fetch soccer_france_ligue_one');
+        $this->line('  php artisan bookmaker:fetch tennis_atp_french_open');
+        $this->line('  php artisan bookmaker:fetch golf_pga_championship');
+        
+        $this->newLine();
+        $this->info('Examples:');
+        $this->line('  php artisan bookmaker:fetch --football');
+        $this->line('  php artisan bookmaker:fetch --golf');
+        $this->line('  php artisan bookmaker:fetch --all');
     }
 }
