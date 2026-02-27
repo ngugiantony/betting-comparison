@@ -133,33 +133,36 @@
                                     <tr class="match-row">
                                         <td class="align-middle">
                                             <span class="badge badge-soft-primary">
-                                                {{  $match->sport }}
+                                                {{  $match->sport_name }}
                                             </span>
                                         </td>
                                         <td class="align-middle">
                                             <div class="match-details">
                                                 <div class="fw-semibold text-dark mb-1">
-                                                    {{ $match->match_details }} 
+                                                    {{ $match->home_name }} <span class="text-muted">vs</span>
+                                                    {{ $match->away_name }}
                                                 </div>
-                                              
+                                                <div class="outcome-label text-success">
+                                                    <i class="fas fa-circle small"></i> {{ $match->home_name }}
+                                                </div>
                                                 <small class="text-muted d-block mt-1">
-                                                   
+                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y H:i') : 'TBD' }}
                                                 </small>
                                             </div>
                                         </td>
                                         <td class="text-center align-middle">
-                                            <span class="type-badge type-home">{{ $match->type  }}</span>
+                                            <span class="type-badge type-home">HOME</span>
                                         </td>
                                         <td class="text-center align-middle">
                                             <div class="odds-display back-odds">
-                                                <div class="odds-value">{{ number_format($match->back, 2) }}
+                                                <div class="odds-value">{{ number_format($match->back_home_odds, 2) }}
                                                 </div>
                                                 {{-- <small class="odds-source d-none d-md-block">{{ $match->back_bookmaker }}</small> --}}
                                             </div>
                                         </td>
                                         <td class="text-center align-middle d-none d-lg-table-cell bookmaker">
-                                            <span class="bookmaker-badge bookmaker-{{ $match->bookmaker }}">
-                                                {{ strtoupper(str_replace('_fr', '', $match->bookmaker)) }}
+                                            <span class="bookmaker-badge bookmaker-{{ $match->back_bookmaker }}">
+                                                {{ strtoupper(str_replace('_fr', '', $match->back_bookmaker)) }}
                                             </span>
 
                                         </td>
@@ -167,10 +170,10 @@
                                             <span class="badge bg-danger">Orbtix</span>
                                         </td>
                                         <td class="text-center align-middle">
-                                            @if ($match->lay)
+                                            @if ($match->lay_odds)
                                                 <div class="odds-display lay-odds">
                                                     <div class="odds-value">
-                                                        {{ number_format($match->lay, 2) }}
+                                                        {{ number_format($match->lay_odds->odds_home_lay, 2) }}
                                                     </div>
                                                     {{-- <small class="odds-volume d-none d-md-block">
                                                         {{ number_format($match->lay_odds->volume_home_lay ?? 0) }}
@@ -183,11 +186,11 @@
                                         <td class="text-center align-middle">
                                             <button class="btn btn-sm btn-outline-success calc-btn" data-toggle="modal"
                                                 data-target="#calculatorModal"
-                                                data-back-odds="{{ $match->back }}"
-                                                data-lay-odds="{{ $match->lay ?? 0 }}"
-                                                data-match="{{ $match->match_details }}"
-                                                data-outcome="{{ $match->type }}"
-                                                data-bookmaker="{{ $match->bookmaker }}">
+                                                data-back-odds="{{ $match->back_home_odds }}"
+                                                data-lay-odds="{{ $match->lay_odds ? $match->lay_odds->odds_home_lay : 0 }}"
+                                                data-match="{{ $match->home_name }} vs {{ $match->away_name }}"
+                                                data-outcome="{{ $match->home_name }}"
+                                                data-bookmaker="{{ $match->back_bookmaker }}">
                                                 <i class="fas fa-calculator d-none d-md-inline"></i>
                                                 <span class="d-none d-md-inline ml-1">Calc</span>
                                                 <i class="fas fa-calculator d-md-none"></i>
@@ -195,7 +198,137 @@
                                         </td>
                                     </tr>
 
-                                   
+                                    <!-- DRAW ROW -->
+                                    @if ($match->back_draw_odds != null)
+                                        <tr class="match-row">
+                                            <td class="align-middle">
+                                                <span class="badge badge-soft-primary">
+                                                    {{  $match->sport_name }}
+                                                </span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <div class="match-details">
+                                                    <div class="fw-semibold text-dark mb-1">
+                                                        {{ $match->home_name }} <span class="text-muted">vs</span>
+                                                        {{ $match->away_name }}
+                                                    </div>
+                                                    <div class="outcome-label text-info">
+                                                        <i class="fas fa-circle small"></i> Draw
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1">
+                                                        {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y H:i') : 'TBD' }}
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span class="type-badge type-draw">DRAW</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <div class="odds-display back-odds">
+                                                    <div class="odds-value">{{ number_format($match->back_draw_odds, 2) }}
+                                                    </div>
+                                                    {{-- <small class="odds-source d-none d-md-block">{{ $match->back_bookmaker }}</small> --}}
+                                                </div>
+                                            </td>
+                                            <td class="text-center align-middle d-none d-lg-table-cell bookmaker">
+                                                <span class="bookmaker-badge bookmaker-{{ $match->back_bookmaker }}">
+                                                    {{ strtoupper(str_replace('_fr', '', $match->back_bookmaker)) }}
+                                                </span>
+
+                                            </td>
+                                            <td class="text-center align-middle d-none d-lg-table-cell">
+                                                <span class="badge bg-danger">Orbtix</span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <div class="odds-display lay-odds">
+                                                    <div class="odds-value">
+                                                        {{ number_format(optional($match->lay_odds)->odds_draw_lay ?? 0, 2) }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <button class="btn btn-sm btn-outline-success calc-btn"
+                                                    data-toggle="modal" data-target="#calculatorModal"
+                                                    data-back-odds="{{ $match->back_draw_odds }}"
+                                                    data-lay-odds="{{ optional($match->lay_odds)->odds_draw_lay ?? 0 }}"
+                                                    data-match="{{ $match->home_name }} vs {{ $match->away_name }}"
+                                                    data-outcome="Draw" data-bookmaker="{{ $match->back_bookmaker }}">
+                                                    <i class="fas fa-calculator d-none d-md-inline"></i>
+                                                    <span class="d-none d-md-inline ml-1">Calc</span>
+                                                    <i class="fas fa-calculator d-md-none"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endif
+
+                                    <!-- AWAY ROW -->
+                                    <tr class="match-row match-row-last">
+                                        <td class="align-middle">
+                                            <span class="badge badge-soft-primary">
+                                                {{ $match->sport_name }}
+                                            </span>
+                                        </td>
+                                        <td class="align-middle">
+                                            <div class="match-details">
+                                                <div class="fw-semibold text-dark mb-1">
+                                                    {{ $match->home_name }} <span class="text-muted">vs</span>
+                                                    {{ $match->away_name }}
+                                                </div>
+                                                <div class="outcome-label text-danger">
+                                                    <i class="fas fa-circle small"></i> {{ $match->away_name }}
+                                                </div>
+                                                <small class="text-muted d-block mt-1">
+                                                    {{ $match->event_date ? \Carbon\Carbon::parse($match->event_date)->format('d M Y H:i') : 'TBD' }}
+                                                </small>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span class="type-badge type-away">AWAY</span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="odds-display back-odds">
+                                                <div class="odds-value">{{ number_format($match->back_away_odds, 2) }}
+                                                </div>
+                                                
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle d-none d-lg-table-cell bookmaker">
+                                            <span class="bookmaker-badge bookmaker-{{ $match->back_bookmaker }}">
+                                                {{ strtoupper(str_replace('_fr', '', $match->back_bookmaker)) }}
+                                            </span>
+
+                                        </td>
+                                        <td class="text-center align-middle d-none d-lg-table-cell">
+                                            <span class="badge bg-danger">Orbtix</span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            @if ($match->lay_odds)
+                                                <div class="odds-display lay-odds">
+                                                    <div class="odds-value">
+                                                        {{ number_format($match->lay_odds->odds_away_lay, 2) }}
+                                                    </div>
+                                                    {{-- <small class="odds-volume d-none d-md-block">
+                                                        {{ number_format($match->lay_odds->volume_away_lay ?? 0) }}
+                                                    </small> --}}
+                                                </div>
+                                            @else
+                                                <span class="text-muted">0.00</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <button class="btn btn-sm btn-outline-success calc-btn" data-toggle="modal"
+                                                data-target="#calculatorModal"
+                                                data-back-odds="{{ $match->back_away_odds }}"
+                                                data-lay-odds="{{ $match->lay_odds ? $match->lay_odds->odds_away_lay : 0 }}"
+                                                data-match="{{ $match->home_name }} vs {{ $match->away_name }}"
+                                                data-outcome="{{ $match->away_name }}"
+                                                data-bookmaker="{{ $match->back_bookmaker }}">
+                                                <i class="fas fa-calculator d-none d-md-inline"></i>
+                                                <span class="d-none d-md-inline ml-1">Calc</span>
+                                                <i class="fas fa-calculator d-md-none"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 @empty
                                     <tr>
                                         <td colspan="8" class="text-center py-5">

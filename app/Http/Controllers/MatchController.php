@@ -7,8 +7,49 @@ use Illuminate\Support\Facades\DB;
 
 class MatchController extends Controller
 {
-   public function index(Request $request)
+      public function index(Request $request)
 {
+
+$backMatches = DB::table('sports_odds as s')
+    ->join('sports_oodds as l', function($join) {
+        $join->on('s.sport',   '=', 'l.sport')
+             ->on('s.evenement',   '=', 'l.evenement')
+            //  ->on('s.market_outcome',  '=', 'l.market_outcome')
+             ;
+    })
+    ->select(
+        's.sport',
+        's.evenement          as match_details',
+        's.market_outcome         as type',
+        's.odds      as back',
+        's.bookmarker      as bookmaker',
+        'l.odds       as lay'
+    )
+    ->get(); 
+
+     $sports = DB::table('sports_odds')        
+        ->distinct()
+        ->get()
+        ->pluck('sport');
+        
+    $competitions = DB::table('sports_odds')
+        ->distinct()
+        ->pluck('bookmarker');
+
+
+    return view('parents.matches.index', compact(
+        'backMatches', 
+        'sports', 
+        'competitions'
+    ));
+}
+   public function indexmain(Request $request)
+{
+
+
+
+    // dd($query
+    // );
     // Get filters
     $sport = $request->get('sport');
     $bookmaker = $request->get('competition'); // Changed to match form field name
@@ -209,4 +250,29 @@ private function calculateSimilarity($str1, $str2)
 {
     similar_text($str1, $str2, $percent);
     return $percent;
-}}
+}
+public function sportodds()
+{
+    $query = DB::table('sport_odds as s')
+    ->join('sports_oodds as l', function($join) {
+        $join->on('s.sport',   '=', 'l.sport')
+             ->on('s.event',   '=', 'l.event')
+             ->on('s.market',  '=', 'l.market');
+    })
+    ->select(
+        's.sport',
+        's.event          as match_details',
+        's.market         as type',
+        's.back_odds      as back',
+        's.bookmaker      as bookmaker',
+        'l.odds       as lay'
+    )
+    ->orderBy('s.sport')
+    ->orderBy('s.event')
+    ->get();        
+
+
+    return view('parents.matches.show', compact('match', 'layOdds'));
+
+}
+}

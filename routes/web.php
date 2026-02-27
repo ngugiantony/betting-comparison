@@ -8,6 +8,7 @@ use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\PricingController;
+use App\Http\Controllers\SportsImportController;
 use App\Http\Controllers\SubscriptionController;
 
 /*
@@ -51,9 +52,14 @@ Route::prefix('/admin')->middleware(['isAdmin'])->group(function(){
 
 
     Route::get('/view-parent/{id}', [AdminController::class,'parent_details'])->name('view_parent_details');
+
+
+
 });
 
 Route::prefix('frontend')->middleware(['isParent'])->group(function(){
+        Route::get('/imports',  [SportsImportController::class, 'showForm'])->name('import.sports.form');
+Route::post('/import', [SportsImportController::class, 'upload'])->name('import.sports.upload');
     Route::get('/', [GuardianController::class, 'index'])->name('parent.dashboard');
     Route::get('/create_students', [GuardianController::class, 'createStudent'])->name('get_students');
     Route::post('/students', [GuardianController::class, 'store'])->name('store_student');
