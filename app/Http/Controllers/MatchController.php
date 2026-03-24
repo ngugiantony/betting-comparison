@@ -9,37 +9,48 @@ class MatchController extends Controller
 {
       public function index(Request $request)
 {
+    $query = DB::table('sports_odds as s')
+        ->join('sports_oodds as l', function($join) {
+            $join->on('s.sport', '=', 'l.sport')
+                 ->on('s.evenement', '=', 'l.evenement')
+                 ->on('s.market_outcome', '=', 'l.market_outcome');
+        })
+        ->select(
+            's.sport',
+            's.evenement as match_details',
+            's.market_outcome as type',
+            's.odds as back',
+            's.bookmarker as bookmaker',
+            'l.odds as lay'
+        )
+        ->where('l.odds', '!=', 0);
 
-$backMatches = DB::table('sports_odds as s')
-    ->join('sports_oodds as l', function($join) {
-        $join->on('s.sport',   '=', 'l.sport')
-             ->on('s.evenement',   '=', 'l.evenement')
-            //  ->on('s.market_outcome',  '=', 'l.market_outcome')
-             ;
-    })
-    ->select(
-        's.sport',
-        's.evenement          as match_details',
-        's.market_outcome         as type',
-        's.odds      as back',
-        's.bookmarker      as bookmaker',
-        'l.odds       as lay'
-    )
-    ->get(); 
+    // Apply filters
+    if ($request->sport) {
+        $query->where('s.sport', $request->sport);
+    }
 
-     $sports = DB::table('sports_odds')        
+    if ($request->competition) {
+        $query->where('s.bookmarker', $request->competition);
+    }
+
+    $backMatches = $query->get();
+
+    // Sports dropdown (unique)
+    $sports = DB::table('sports_odds')
+        ->select('sport')
         ->distinct()
-        ->get()
         ->pluck('sport');
-        
+
+    // Competitions dropdown (unique)
     $competitions = DB::table('sports_odds')
+        ->select('bookmarker')
         ->distinct()
         ->pluck('bookmarker');
 
-
     return view('parents.matches.index', compact(
-        'backMatches', 
-        'sports', 
+        'backMatches',
+        'sports',
         'competitions'
     ));
 }

@@ -194,7 +194,7 @@
                 </a>
             </li>
 
-            <li class="side-nav-item">
+            {{-- <li class="side-nav-item">
                 <a href="#" class="side-nav-link">
                     <i class="uil-graph-bar"></i>
                     <span>Bets Stream</span>
@@ -232,7 +232,7 @@
                     <i class="uil-user-circle"></i>
                     <span>Profile</span>
                 </a>
-            </li>
+            </li> --}}
         </ul>
 
         <div class="clearfix"></div>

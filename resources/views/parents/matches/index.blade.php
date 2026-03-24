@@ -50,7 +50,7 @@
                         style=" background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                         <form method="GET" action="{{ route('matches.index') }}">
                             <div class="row g-3">
-                                <div class="col-lg-3 col-md-6">
+                                <div class="col-lg-4 col-md-6">
                                     <label class="form-label text-white fw-medium small mb-2">Sport</label>
                                     <select name="sport" class="form-select form-select-sm">
                                         <option value="">All Sports</option>
@@ -63,7 +63,7 @@
                                     </select>
                                 </div>
 
-                                <div class="col-lg-3 col-md-6">
+                                <div class="col-lg-4 col-md-6">
                                     <label class="form-label text-white fw-medium small mb-2">Bookmaker</label>
                                     <select name="competition" class="form-select form-select-sm">
                                         <option value="">All Bookies</option>
@@ -76,28 +76,17 @@
                                     </select>
                                 </div>
 
-                                <div class="col-lg-3 col-md-6">
-                                    <label class="form-label text-white fw-medium small mb-2">Home Team</label>
-                                    <input type="text" name="home_team" class="form-control form-control-sm"
-                                        value="{{ request('home_team') }}" placeholder="Search...">
-                                </div>
-
-                                <div class="col-lg-3 col-md-6">
-                                    <label class="form-label text-white fw-medium small mb-2">Away Team</label>
-                                    <input type="text" name="away_team" class="form-control form-control-sm"
-                                        value="{{ request('away_team') }}" placeholder="Search...">
-                                </div>
-                            </div>
-
-                            <div class="row mt-3">
-                                <div class="col-12">
+                               
+                                <div class="col-lg-4 col-md-12 d-flex align-items-end">
                                     <button type="submit" class="btn btn-success btn-sm px-4">
                                         <i class="fas fa-search mr-1"></i> Search
                                     </button>
                                     <a href="{{ route('matches.index') }}" class="btn btn-outline-danger btn-sm px-4 ml-2">
                                         <i class="fas fa-redo mr-1"></i> Reset
                                     </a>
-                                </div>
+                                
+                                    
+                            </div>
                             </div>
                         </form>
                     </div>
@@ -469,7 +458,7 @@
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
-            color: #fff !important;
+            color: #070707 !important;
             display: inline-block;
             text-transform: uppercase;
         }
